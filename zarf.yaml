@@ -1,0 +1,68 @@
+kind: ZarfInitConfig
+metadata:
+  name: init
+  description: Used to establish a new Zarf cluster
+
+components:
+  - name: k3s
+    import:
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+
+  # This package moves the injector & registries binaries
+  - name: zarf-injector
+    required: true
+    import:
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+
+  # Creates the temporary seed-registry
+  - name: zarf-seed-registry
+    required: true
+    import:
+      path: zarf-registry
+    charts:
+      - name: docker-registry
+        valuesFiles:
+          - overrides/registry-values-longhorn.yaml
+
+  # Push longhorn images to seed-registry
+  - name: longhorn-images-initial
+    required: true
+    import:
+      path: longhorn
+      name: longhorn-images
+
+  # Deploy longhorn
+  - name: longhorn-deployment
+    required: true
+    import:
+      path: longhorn
+
+  # Creates the permanent registry
+  - name: zarf-registry
+    required: true
+    import:
+      path: zarf-registry
+
+  # Push longhorn (and registry) images to permanent registry
+  - name: longhorn-images
+    required: true
+    import:
+      path: longhorn
+    images:
+      - "###ZARF_PKG_TMPL_REGISTRY_IMAGE_DOMAIN######ZARF_PKG_TMPL_REGISTRY_IMAGE###:###ZARF_PKG_TMPL_REGISTRY_IMAGE_TAG###"
+
+  # Creates the pod+git mutating webhook
+  - name: zarf-agent
+    required: true
+    import:
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+
+  # (Optional) Adds logging to the cluster
+  - name: logging
+    import:
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+
+  # (Optional) Adds a git server to the cluster
+  - name: git-server
+    import:
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton

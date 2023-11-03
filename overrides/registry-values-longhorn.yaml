@@ -1,0 +1,9 @@
+persistence:
+  enabled: false
+
+autoscaling:
+  enabled: false
+
+extraEnvVars:
+  - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+    value: "/var/lib/registry"
