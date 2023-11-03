@@ -41,7 +41,7 @@ components:
   - name: zarf-registry
     required: true
     import:
-      path: zarf-registry
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
 
   # Push longhorn (and registry) images to permanent registry
   - name: longhorn-images
