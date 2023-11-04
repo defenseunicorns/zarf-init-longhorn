@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
       - name: Install Longhorn pre-reqs to ubuntu-latest
-        run: apt-get install open-iscsi nfs-common
+        run: sudo apt-get install open-iscsi nfs-common
 
       - name: Install release version of Zarf
         uses: defenseunicorns/setup-zarf@main
