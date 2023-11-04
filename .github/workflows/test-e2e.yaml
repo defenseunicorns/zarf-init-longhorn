@@ -33,11 +33,11 @@ jobs:
           download-init-package: false
       
       - name: Create the Longhorn init package
-        run: zarf package create . --set AGENT_IMAGE_TAG=$(zarf version)
+        run: zarf package create . --set AGENT_IMAGE_TAG=$(zarf version) --confirm
 
       - name: Deploy the Longhorn init package
         # TODO: (@WSTARR) Once variable merging is in we should add `--disable=local-storage` to the default K3S_ARGS for this package
-        run: sudo zarf init --components k3s,logging,git-server --storage-class longhorn --set K3S_ARGS="--disable=traefik --disable=local-storage"
+        run: sudo zarf init --components k3s,logging,git-server --storage-class longhorn --set K3S_ARGS="--disable=traefik --disable=local-storage" --confirm
 
       - name: Save logs
         if: always()
