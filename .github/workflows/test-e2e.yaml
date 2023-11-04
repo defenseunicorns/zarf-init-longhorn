@@ -34,6 +34,8 @@ jobs:
           sudo systemctl status open-iscsi || echo inactive
           sudo systemctl start iscsid
           sudo systemctl start open-iscsi
+          sudo systemctl status iscsid || echo inactive
+          sudo systemctl status open-iscsi || echo inactive
 
       - name: Install release version of Zarf
         uses: defenseunicorns/setup-zarf@main
@@ -50,8 +52,8 @@ jobs:
           sudo ${HOME}/.zarf-cache/zarf init \
             --components k3s,logging,git-server --storage-class longhorn \
             --set K3S_ARGS="--disable=traefik --disable=local-storage" \
-            --set REGISTRY_PVC_ACCESS_MODE=ReadWriteMany
-            --set GIT_SERVER_PVC_ACCESS_MODE=ReadWriteMany
+            --set REGISTRY_PVC_ACCESS_MODE=ReadWriteMany \
+            --set GIT_SERVER_PVC_ACCESS_MODE=ReadWriteMany \
             --no-progress --confirm
 
       - name: Save logs
