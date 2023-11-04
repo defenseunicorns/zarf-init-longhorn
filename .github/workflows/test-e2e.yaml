@@ -23,7 +23,6 @@ jobs:
   # Build the binary and init package
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
@@ -40,6 +39,7 @@ jobs:
         run: zarf package create . --set AGENT_IMAGE_TAG=$(zarf version) --no-progress --confirm
 
       - name: Deploy the Longhorn init package
+        timeout-minutes: 30
         # TODO: (@WSTARR) Once variable merging is in we should add `--disable=local-storage` to the default K3S_ARGS for this package
         run: |
           sudo ${HOME}/.zarf-cache/zarf init \
