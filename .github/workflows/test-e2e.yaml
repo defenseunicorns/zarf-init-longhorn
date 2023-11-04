@@ -1,0 +1,44 @@
+name: Test E2E
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "**.jpg"
+      - "**.png"
+      - "**.gif"
+      - "**.svg"
+      - "adr/**"
+      - "docs/**"
+      - "CODEOWNERS"
+
+permissions:
+  contents: read
+
+# Abort prior jobs in the same workflow / PR
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Build the binary and init package
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Install release version of Zarf
+        uses: defenseunicorns/setup-zarf@main
+        with:
+          download-init-package: false
+      
+      - name: Create the Longhorn init package
+        run: zarf package create . --set AGENT_IMAGE_TAG=$(zarf version)
+
+      - name: Deploy the Longhorn init package
+        # TODO: (@WSTARR) Once variable merging is in we should add `--disable=local-storage` to the default K3S_ARGS for this package
+        run: sudo zarf init --components k3s,logging,git-server --storage-class longhorn --set K3S_ARGS="--disable=traefik --disable=local-storage"
+
+      - name: Save logs
+        if: always()
+        uses: defenseunicorns/zarf/.github/actions/save-logs@main
