@@ -31,7 +31,9 @@ jobs:
         run: |
           sudo apt-get install open-iscsi nfs-common
           sudo systemctl status open-iscsi
+          sudo systemctl status iscsid
           sudo iscsiadm -m session
+          sudo systemctl start iscsid
           sudo systemctl start open-iscsi
 
       - name: Install release version of Zarf
