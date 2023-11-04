@@ -30,9 +30,8 @@ jobs:
       - name: Install Longhorn pre-reqs to ubuntu-latest
         run: |
           sudo apt-get install open-iscsi nfs-common
-          sudo systemctl status iscsid
-          sudo systemctl status open-iscsi
-          sudo iscsiadm -m session
+          sudo systemctl status iscsid || echo inactive
+          sudo systemctl status open-iscsi || echo inactive
           sudo systemctl start iscsid
           sudo systemctl start open-iscsi
 
