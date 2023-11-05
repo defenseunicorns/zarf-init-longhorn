@@ -57,11 +57,11 @@ jobs:
       - name: Get cluster info
         if: always()
         run: |
-          kubectl describe nodes
+          sudo kubectl describe nodes
           echo ""
-          kubectl describe pods -n zarf
+          sudo kubectl describe pods -n zarf
           echo ""
-          kubectl describe deployments -n zarf
+          sudo kubectl describe deployments -n zarf
 
       - name: Save logs
         if: always()
