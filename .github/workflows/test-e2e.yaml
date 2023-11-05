@@ -54,6 +54,15 @@ jobs:
             --set K3S_ARGS="--disable=traefik --disable=local-storage" \
             --no-progress --confirm
 
+      - name: Get cluster info
+        if: always()
+        run: |
+          kubectl describe nodes
+          echo ""
+          kubectl describe pods -n zarf
+          echo ""
+          kubectl describe deployments -n zarf
+
       - name: Save logs
         if: always()
         uses: defenseunicorns/zarf/.github/actions/save-logs@main
