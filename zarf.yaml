@@ -3,22 +3,27 @@ metadata:
   name: init
   description: Used to establish a new Zarf cluster
 
+variables:
+  - name: K3S_ARGS
+    description: Arguments to pass to K3s
+    default: --disable=traefik --disable=local-storage
+
 components:
   - name: k3s
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # This package moves the injector & registries binaries
   - name: zarf-injector
     required: true
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # Creates the temporary seed-registry
   - name: zarf-seed-registry
     required: true
     import:
-      path: zarf-registry
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
     charts:
       - name: docker-registry
         valuesFiles:
@@ -41,7 +46,7 @@ components:
   - name: zarf-registry
     required: true
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # Push longhorn (and registry) images to permanent registry
   - name: longhorn-images
@@ -55,14 +60,14 @@ components:
   - name: zarf-agent
     required: true
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # (Optional) Adds logging to the cluster
   - name: logging
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # (Optional) Adds a git server to the cluster
   - name: git-server
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
