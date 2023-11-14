@@ -50,6 +50,7 @@ jobs:
         run: |
           sudo ${HOME}/.zarf-cache/zarf init \
             --components k3s,logging,git-server --storage-class longhorn \
+            --set REGISTRY_PVC_SIZE=2Gi --set GIT_SERVER_PVC_SIZE=1Gi \
             --no-progress --confirm
 
       - name: Get cluster info
