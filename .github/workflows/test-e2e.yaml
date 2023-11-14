@@ -32,7 +32,6 @@ jobs:
           sudo apt-get install open-iscsi nfs-common
           sudo systemctl status iscsid || echo inactive
           sudo systemctl status open-iscsi || echo inactive
-          sudo systemctl start iscsid
           sudo systemctl start open-iscsi
           sudo systemctl status iscsid || echo inactive
           sudo systemctl status open-iscsi || echo inactive
