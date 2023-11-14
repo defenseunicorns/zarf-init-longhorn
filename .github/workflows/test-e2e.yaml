@@ -63,11 +63,15 @@ jobs:
           echo ""
           sudo kubectl describe persistentvolumeclaim -n zarf
           echo ""
+          sudo kubectl describe persistentvolume -n zarf
+          echo ""
           sudo kubectl describe pods -n longhorn-system
           echo ""
           sudo kubectl describe deployments -n longhorn-system
           echo ""
           sudo kubectl describe persistentvolumeclaim -n longhorn-system
+          echo ""
+          sudo kubectl describe persistentvolume -n longhorn-system
 
       - name: Save logs
         if: always()
