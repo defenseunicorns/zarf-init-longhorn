@@ -34,7 +34,6 @@ jobs:
           sudo ls -lah /etc/iscsi/nodes || echo bad
           sudo ls -lah /sys/class/iscsi_session || echo bad
           sudo mkdir -p /etc/iscsi/nodes
-          sudo mkdir -p /sys/class/iscsi_session
           sudo systemctl start open-iscsi
           sudo systemctl status open-iscsi || echo inactive
 
