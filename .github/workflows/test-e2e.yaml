@@ -30,11 +30,13 @@ jobs:
       - name: Install Longhorn pre-reqs to ubuntu-latest
         run: |
           sudo apt-get install nfs-common
+          sudo systemctl status iscsi || echo inactive
           sudo systemctl status open-iscsi || echo inactive
+          sudo systemctl start iscsi
           sudo ls -lah /etc/iscsi/nodes || echo bad
           sudo ls -lah /sys/class/iscsi_session || echo bad
-          sudo mkdir -p /etc/iscsi/nodes
           sudo systemctl start open-iscsi
+          sudo systemctl status iscsi || echo inactive
           sudo systemctl status open-iscsi || echo inactive
 
       - name: Install release version of Zarf
