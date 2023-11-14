@@ -29,13 +29,10 @@ jobs:
 
       - name: Install Longhorn pre-reqs to ubuntu-latest
         run: |
-          sudo apt-get install open-iscsi nfs-common
-          sudo systemctl status iscsid || echo inactive
+          sudo apt-get install nfs-common
           sudo systemctl status open-iscsi || echo inactive
           sudo systemctl start open-iscsi
-          sudo systemctl status iscsid || echo inactive
           sudo systemctl status open-iscsi || echo inactive
-          sudo mkdir -p /var/lib/longhorn/
 
       - name: Install release version of Zarf
         uses: defenseunicorns/setup-zarf@main
