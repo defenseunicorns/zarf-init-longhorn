@@ -29,11 +29,7 @@ jobs:
 
       - name: Install Longhorn pre-reqs to ubuntu-latest
         run: |
-          sudo apt-get install nfs-common
           sudo systemctl status open-iscsi || echo inactive
-          sudo iscsiadm -m discoverydb -t sendtargets -p 127.0.0.1
-          sudo ls -lah /etc/iscsi/nodes || echo bad
-          sudo ls -lah /sys/class/iscsi_session || echo bad
           sudo systemctl start open-iscsi
           sudo systemctl status open-iscsi || echo inactive
 
@@ -43,7 +39,9 @@ jobs:
           download-init-package: false
       
       - name: Create the Longhorn init package
-        run: zarf package create . --set AGENT_IMAGE_TAG=$(zarf version) --no-progress --confirm
+        run: |
+          zarf package create . --set AGENT_IMAGE_TAG=$(zarf version) --no-progress --confirm
+          zarf tools clear-cache
 
       - name: Deploy the Longhorn init package
         timeout-minutes: 30
@@ -56,22 +54,23 @@ jobs:
       - name: Get cluster info
         if: always()
         run: |
+          lsblk -f
           sudo kubectl describe nodes
-          echo ""
+          echo -e "\n### ZARF PODS ###\n"
           sudo kubectl describe pods -n zarf
-          echo ""
+          echo -e "\n### ZARF DEPLOYMENTS ###\n"
           sudo kubectl describe deployments -n zarf
-          echo ""
+          echo -e "\n### ZARF PERSISTENTVOLUMECLAIMS ###\n"
           sudo kubectl describe persistentvolumeclaim -n zarf
-          echo ""
+          echo -e "\n### ZARF PERSISTENTVOLUMES ###\n"
           sudo kubectl describe persistentvolume -n zarf
-          echo ""
+          echo -e "\n### LONGHORN PODS ###\n"
           sudo kubectl describe pods -n longhorn-system
-          echo ""
+          echo -e "\n### LONGHORN DEPLOYMENTS ###\n"
           sudo kubectl describe deployments -n longhorn-system
-          echo ""
+          echo -e "\n### LONGHORN PERSISTENTVOLUMECLAIMS ###\n"
           sudo kubectl describe persistentvolumeclaim -n longhorn-system
-          echo ""
+          echo -e "\n### LONGHORN PERSISTENTVOLUMES ###\n"
           sudo kubectl describe persistentvolume -n longhorn-system
 
       - name: Save logs
