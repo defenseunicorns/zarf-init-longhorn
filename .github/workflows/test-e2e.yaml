@@ -40,13 +40,14 @@ jobs:
       
       - name: Create the Longhorn init package
         run: |
+          sudo cp ${HOME}/.zarf-cache/zarf /usr/local/bin/zarf
           zarf package create . --set AGENT_IMAGE_TAG=$(zarf version) --no-progress --confirm
           zarf tools clear-cache
 
       - name: Deploy the Longhorn init package
         timeout-minutes: 30
         run: |
-          sudo ${HOME}/.zarf-cache/zarf init \
+          sudo zarf init \
             --components k3s,logging,git-server --storage-class longhorn \
             --set REGISTRY_PVC_SIZE=256Mi --set GIT_SERVER_PVC_SIZE=256Mi \
             --no-progress --confirm
