@@ -33,7 +33,7 @@ jobs:
           sudo systemctl status iscsid || echo inactive
           sudo systemctl start iscsid
           sudo systemctl status iscsid || echo inactive
-          sudo iscsiadm -m discoverydb -t st -p $(hostname -I | cut -d " " -f 1) || echo cannot
+          sleep 30
           sudo ls /etc/iscsi/nodes || echo nonexist
           sudo ls /sys/class/iscsi_session || echo nonexist
           sudo systemctl status open-iscsi || echo inactive
