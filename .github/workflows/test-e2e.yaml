@@ -29,16 +29,11 @@ jobs:
 
       - name: Install Longhorn pre-reqs to ubuntu-latest
         run: |
-          sudo cat /etc/iscsi/iscsid.conf || echo nonexist
           sudo systemctl status iscsid || echo inactive
           sudo systemctl start iscsid
           sudo systemctl status iscsid || echo inactive
-          sleep 30
-          sudo ls /etc/iscsi/nodes || echo nonexist
-          sudo ls /sys/class/iscsi_session || echo nonexist
           sudo systemctl status open-iscsi || echo inactive
-          sudo systemctl start open-iscsi
-          sudo systemctl status open-iscsi || echo inactive
+          curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/v1.5.3/scripts/environment_check.sh | bash
 
 
       - name: Install release version of Zarf
