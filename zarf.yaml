@@ -12,6 +12,10 @@ components:
   - name: k3s
     import:
       url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
+    actions:
+      onDeploy:
+        after:
+          - cmd: curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/v1.5.3/scripts/environment_check.sh | bash
 
   # This package moves the injector & registries binaries
   - name: zarf-injector

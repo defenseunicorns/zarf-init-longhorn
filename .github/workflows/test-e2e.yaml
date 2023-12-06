@@ -33,8 +33,6 @@ jobs:
           sudo systemctl start iscsid
           sudo systemctl status iscsid || echo inactive
           sudo systemctl status open-iscsi || echo inactive
-          curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/v1.5.3/scripts/environment_check.sh | bash
-
 
       - name: Install release version of Zarf
         uses: defenseunicorns/setup-zarf@main
@@ -52,7 +50,6 @@ jobs:
         run: |
           sudo zarf init \
             --components k3s,logging,git-server --storage-class longhorn \
-            --set REGISTRY_PVC_SIZE=256Mi --set GIT_SERVER_PVC_SIZE=256Mi \
             --no-progress --confirm
       
       # TODO (@WSTARR): We need upgrade tests for this package
