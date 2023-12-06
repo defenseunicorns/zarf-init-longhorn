@@ -40,7 +40,7 @@ components:
             cmd: |
               ./zarf tools kubectl get pvc zarf-docker-registry -n zarf >/dev/null 2>&1 && \
               echo "" || \
-              echo -e "- name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY\n  value: \"/var/lib/registry\""
+              echo "- name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY\n  value: \"/var/lib/registry\""
             setVariables:
               - name: UPGRADE_ENV_VARS
                 autoIndent: true

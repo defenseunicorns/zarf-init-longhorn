@@ -51,6 +51,8 @@ jobs:
             --components k3s,logging,git-server --storage-class longhorn \
             --set REGISTRY_PVC_SIZE=256Mi --set GIT_SERVER_PVC_SIZE=256Mi \
             --no-progress --confirm
+      
+      # TODO (@WSTARR): We need upgrade tests for this package
 
       - name: Get cluster info
         if: always()
