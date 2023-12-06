@@ -29,9 +29,15 @@ jobs:
 
       - name: Install Longhorn pre-reqs to ubuntu-latest
         run: |
+          sudo ls /etc/iscsi/nodes || echo nonexist
+          sudo ls /sys/class/iscsi_session || echo nonexist
+          sudo cat /etc/iscsi/iscsid.conf || echo nonexist
+          sudo systemctl status iscsid || echo inactive
+          sudo systemctl start iscsid
           sudo systemctl status open-iscsi || echo inactive
           sudo systemctl start open-iscsi
           sudo systemctl status open-iscsi || echo inactive
+
 
       - name: Install release version of Zarf
         uses: defenseunicorns/setup-zarf@main
