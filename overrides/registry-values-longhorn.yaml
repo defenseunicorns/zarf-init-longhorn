@@ -1,9 +1,8 @@
 persistence:
-  enabled: false
+  enabled: ###ZARF_VAR_IS_UPGRADE###
 
 autoscaling:
   enabled: false
 
 extraEnvVars:
-  - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-    value: "/var/lib/registry"
+  ###ZARF_VAR_UPGRADE_ENV_VARS###

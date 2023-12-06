@@ -28,6 +28,22 @@ components:
       - name: docker-registry
         valuesFiles:
           - overrides/registry-values-longhorn.yaml
+    # On upgrades we retain the PVC from previously to prevent losing images
+    actions:
+      onDeploy:
+        before:
+          - description: Check if this is an upgrade
+            cmd: ./zarf tools kubectl get pvc zarf-docker-registry -n zarf >/dev/null 2>&1 && echo true || echo false
+            setVariables:
+              - name: IS_UPGRADE
+          - description: Set env vars
+            cmd: |
+              ./zarf tools kubectl get pvc zarf-docker-registry -n zarf >/dev/null 2>&1 && \
+              echo "" || \
+              echo -e "- name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY\n  value: \"/var/lib/registry\""
+            setVariables:
+              - name: UPGRADE_ENV_VARS
+                autoIndent: true
 
   # Push longhorn images to seed-registry
   - name: longhorn-images-initial
