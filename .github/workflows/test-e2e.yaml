@@ -34,6 +34,7 @@ jobs:
           sudo cat /etc/iscsi/iscsid.conf || echo nonexist
           sudo systemctl status iscsid || echo inactive
           sudo systemctl start iscsid
+          sudo systemctl status iscsid || echo inactive
           sudo systemctl status open-iscsi || echo inactive
           sudo systemctl start open-iscsi
           sudo systemctl status open-iscsi || echo inactive
