@@ -15,7 +15,7 @@ Zarf eliminates the [complexity of air gap software delivery](https://www.itopst
 
 ## Zarf Init Package for Longhorn
 
-This repository contains the Zarf init package for Longhorn that creates a longhorn storage class on the cluster.
+This repository contains the Zarf init package for Longhorn that creates a longhorn storage class on the cluster during init.
 
 ## Usage
 

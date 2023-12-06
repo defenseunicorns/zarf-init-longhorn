@@ -1,0 +1,85 @@
+name: Test E2E
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "**.jpg"
+      - "**.png"
+      - "**.gif"
+      - "**.svg"
+      - "adr/**"
+      - "docs/**"
+      - "CODEOWNERS"
+
+permissions:
+  contents: read
+
+# Abort prior jobs in the same workflow / PR
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Build the binary and init package
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Install Longhorn pre-reqs to ubuntu-latest
+        run: |
+          sudo apt install -y nfs-common
+          sudo systemctl status iscsid || echo inactive
+          sudo systemctl start iscsid
+          sudo systemctl status iscsid || echo inactive
+          sudo systemctl status open-iscsi || echo inactive
+          sudo systemctl status multipathd || echo inactive
+          sudo systemctl stop multipathd
+          sudo systemctl status multipathd || echo inactive
+
+      - name: Install release version of Zarf
+        uses: defenseunicorns/setup-zarf@main
+        with:
+          download-init-package: false
+      
+      - name: Create the Longhorn init package
+        run: |
+          sudo cp ${HOME}/.zarf-cache/zarf /usr/local/bin/zarf
+          zarf package create . --set AGENT_IMAGE_TAG=$(zarf version) --no-progress --confirm
+          zarf tools clear-cache
+
+      - name: Deploy the Longhorn init package
+        timeout-minutes: 30
+        run: |
+          sudo zarf init \
+            --components k3s,logging,git-server --storage-class longhorn \
+            --no-progress --confirm
+      
+      # TODO (@WSTARR): We need upgrade tests for this package
+
+      - name: Get cluster info
+        if: always()
+        run: |
+          lsblk -f
+          sudo kubectl describe nodes
+          echo -e "\n### ZARF PODS ###\n"
+          sudo kubectl describe pods -n zarf
+          echo -e "\n### ZARF DEPLOYMENTS ###\n"
+          sudo kubectl describe deployments -n zarf
+          echo -e "\n### ZARF PERSISTENTVOLUMECLAIMS ###\n"
+          sudo kubectl describe persistentvolumeclaim -n zarf
+          echo -e "\n### ZARF PERSISTENTVOLUMES ###\n"
+          sudo kubectl describe persistentvolume -n zarf
+          echo -e "\n### LONGHORN PODS ###\n"
+          sudo kubectl describe pods -n longhorn-system
+          echo -e "\n### LONGHORN DEPLOYMENTS ###\n"
+          sudo kubectl describe deployments -n longhorn-system
+          echo -e "\n### LONGHORN PERSISTENTVOLUMECLAIMS ###\n"
+          sudo kubectl describe persistentvolumeclaim -n longhorn-system
+          echo -e "\n### LONGHORN PERSISTENTVOLUMES ###\n"
+          sudo kubectl describe persistentvolume -n longhorn-system
+
+      - name: Save logs
+        if: always()
+        uses: defenseunicorns/zarf/.github/actions/save-logs@main

@@ -3,26 +3,51 @@ metadata:
   name: init
   description: Used to establish a new Zarf cluster
 
+variables:
+  - name: K3S_ARGS
+    description: Arguments to pass to K3s
+    default: --disable=traefik --disable=local-storage
+
 components:
   - name: k3s
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
+    actions:
+      onDeploy:
+        after:
+          - cmd: curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/v1.5.3/scripts/environment_check.sh | bash
 
   # This package moves the injector & registries binaries
   - name: zarf-injector
     required: true
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # Creates the temporary seed-registry
   - name: zarf-seed-registry
     required: true
     import:
-      path: zarf-registry
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
     charts:
       - name: docker-registry
         valuesFiles:
           - overrides/registry-values-longhorn.yaml
+    # On upgrades we retain the PVC from previously to prevent losing images
+    actions:
+      onDeploy:
+        before:
+          - description: Check if this is an upgrade
+            cmd: ./zarf tools kubectl get pvc zarf-docker-registry -n zarf >/dev/null 2>&1 && echo true || echo false
+            setVariables:
+              - name: IS_UPGRADE
+          - description: Set env vars
+            cmd: |
+              ./zarf tools kubectl get pvc zarf-docker-registry -n zarf >/dev/null 2>&1 && \
+              echo "" || \
+              echo "- name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY\n  value: \"/var/lib/registry\""
+            setVariables:
+              - name: UPGRADE_ENV_VARS
+                autoIndent: true
 
   # Push longhorn images to seed-registry
   - name: longhorn-images-initial
@@ -41,7 +66,7 @@ components:
   - name: zarf-registry
     required: true
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # Push longhorn (and registry) images to permanent registry
   - name: longhorn-images
@@ -55,14 +80,14 @@ components:
   - name: zarf-agent
     required: true
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # (Optional) Adds logging to the cluster
   - name: logging
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
 
   # (Optional) Adds a git server to the cluster
   - name: git-server
     import:
-      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.0-skeleton
+      url: oci://ghcr.io/defenseunicorns/packages/init:v0.31.1-skeleton
